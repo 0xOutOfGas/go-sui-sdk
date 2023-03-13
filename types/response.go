@@ -67,34 +67,116 @@ type ExecuteTransactionEffects struct {
 	AuthSignInfo *AuthSignInfo      `json:"authSignInfo"`
 }
 
-type ExecuteTransactionResponse struct {
-	ImmediateReturn *struct {
-		TransactionDigest string `json:"tx_digest"`
-	} `json:"ImmediateReturn,omitempty"`
-
-	TxCert *struct {
-		Certificate CertifiedTransaction `json:"certificate"`
-	} `json:"TxCert,omitempty"`
-
-	EffectsCert *struct {
-		Certificate CertifiedTransaction      `json:"certificate"`
-		Effects     ExecuteTransactionEffects `json:"effects"`
-
-		ConfirmedLocalExecution bool `json:"confirmed_local_execution"`
-	} `json:"EffectsCert,omitempty"`
-}
-
 func (r *ExecuteTransactionResponse) TransactionDigest() string {
-	switch {
-	case r.ImmediateReturn != nil:
-		return r.ImmediateReturn.TransactionDigest
-	case r.TxCert != nil:
-		return r.TxCert.Certificate.TransactionDigest
-	case r.EffectsCert != nil:
-		return r.EffectsCert.Certificate.TransactionDigest
-	}
-	return ""
+	return r.Certificate.TransactionDigest
 }
+
+type ExecuteTransactionResponse  struct {
+		Certificate struct {
+			TransactionDigest string `json:"transactionDigest"`
+			Data              struct {
+				Transactions []struct {
+					Publish struct {
+						Disassembled struct {
+							Checkin string `json:"checkin"`
+						} `json:"disassembled"`
+					} `json:"Publish"`
+				} `json:"transactions"`
+				Sender  string `json:"sender"`
+				GasData struct {
+					Payment struct {
+						ObjectID string `json:"objectId"`
+						Version  int    `json:"version"`
+						Digest   string `json:"digest"`
+					} `json:"payment"`
+					Owner  string `json:"owner"`
+					Price  int    `json:"price"`
+					Budget int    `json:"budget"`
+				} `json:"gasData"`
+			} `json:"data"`
+			TxSignatures []string `json:"txSignatures"`
+			AuthSignInfo struct {
+				Epoch      int    `json:"epoch"`
+				Signature  string `json:"signature"`
+				SignersMap []int  `json:"signers_map"`
+			} `json:"authSignInfo"`
+		} `json:"certificate"`
+		Effects struct {
+			TransactionEffectsDigest string `json:"transactionEffectsDigest"`
+			Effects                  struct {
+				Status struct {
+					Status string `json:"status"`
+				} `json:"status"`
+				ExecutedEpoch int `json:"executedEpoch"`
+				GasUsed       struct {
+					ComputationCost int `json:"computationCost"`
+					StorageCost     int `json:"storageCost"`
+					StorageRebate   int `json:"storageRebate"`
+				} `json:"gasUsed"`
+				TransactionDigest string `json:"transactionDigest"`
+				Created           []struct {
+					Owner     string `json:"owner"`
+					Reference struct {
+						ObjectID string `json:"objectId"`
+						Version  int    `json:"version"`
+						Digest   string `json:"digest"`
+					} `json:"reference"`
+				} `json:"created"`
+				Mutated []struct {
+					Owner struct {
+						AddressOwner string `json:"AddressOwner"`
+					} `json:"owner"`
+					Reference struct {
+						ObjectID string `json:"objectId"`
+						Version  int    `json:"version"`
+						Digest   string `json:"digest"`
+					} `json:"reference"`
+				} `json:"mutated"`
+				GasObject struct {
+					Owner struct {
+						AddressOwner string `json:"AddressOwner"`
+					} `json:"owner"`
+					Reference struct {
+						ObjectID string `json:"objectId"`
+						Version  int    `json:"version"`
+						Digest   string `json:"digest"`
+					} `json:"reference"`
+				} `json:"gasObject"`
+				Events []struct {
+					CoinBalanceChange struct {
+						PackageID         string `json:"packageId"`
+						TransactionModule string `json:"transactionModule"`
+						Sender            string `json:"sender"`
+						ChangeType        string `json:"changeType"`
+						Owner             struct {
+							AddressOwner string `json:"AddressOwner"`
+						} `json:"owner"`
+						CoinType     string `json:"coinType"`
+						CoinObjectID string `json:"coinObjectId"`
+						Version      int    `json:"version"`
+						Amount       int    `json:"amount"`
+					} `json:"coinBalanceChange,omitempty"`
+					Publish struct {
+						Sender    string `json:"sender"`
+						PackageID string `json:"packageId"`
+						Version   int    `json:"version"`
+						Digest    string `json:"digest"`
+					} `json:"publish,omitempty"`
+				} `json:"events"`
+				Dependencies []string `json:"dependencies"`
+			} `json:"effects"`
+			FinalityInfo struct {
+				Certified struct {
+					Epoch      int    `json:"epoch"`
+					Signature  string `json:"signature"`
+					SignersMap []int  `json:"signers_map"`
+				} `json:"certified"`
+			} `json:"finalityInfo"`
+		} `json:"effects"`
+		ConfirmedLocalExecution bool `json:"confirmed_local_execution"`
+
+}
+
 
 type SuiCoinMetadata struct {
 	Decimals    uint8    `json:"decimals"`
