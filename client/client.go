@@ -85,6 +85,14 @@ func (c *Client) CallContext(ctx context.Context, result interface{}, method str
 	if err != nil {
 		return err
 	}
+	buf, err := io.ReadAll(respBody)
+	if err!=nil {
+		respBody.Close()
+		return err
+	}
+	fmt.Printf("*** %v ***\n", string(buf))
+	respBody = io.NopCloser(bytes.NewBuffer(buf))
+
 	defer respBody.Close()
 
 	var respmsg jsonrpcMessage
