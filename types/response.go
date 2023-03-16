@@ -267,7 +267,7 @@ type ExecuteTransactionResponse  struct {
 					PackageID         string `json:"packageId"`
 					TransactionModule string `json:"transactionModule"`
 					Sender            string `json:"sender"`
-					Recipient         map[string]interface{} `json:"recipient"`
+					Recipient         interface{} `json:"recipient"`
 					ObjectType string `json:"objectType"`
 					ObjectID   string `json:"objectId"`
 					Version    int    `json:"version"`
